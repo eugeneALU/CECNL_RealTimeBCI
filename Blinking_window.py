@@ -4,7 +4,6 @@ Created on Wed Nov  6 10:10:36 2019
 
 @author: ALU
 """
-
 import threading 
 import pygame 
 import time
@@ -16,17 +15,20 @@ b = threading.Barrier(NUM_OF_THREAD)
 def blinking_block(points, frequency):
     COUNT = 1
     CLOCK = pygame.time.Clock()
+    ''' FrameRate '''
+    FrameRate = 144
     
     b.wait()    #Synchronize the start of each thread
     while True: #execution block
-        CLOCK.tick(60)
-        color = 127.5*(1+sin(2*pi*frequency*(COUNT/60))) 
+        CLOCK.tick(FrameRate)
+        tmp = sin(2*pi*frequency*(COUNT/FrameRate))
+        color = 255*(tmp>0)
         block = pygame.draw.polygon(win, (color, color, color), points, 0)
         pygame.display.update(block)  #can't update in main thread which will introduce delay in different block       
         COUNT += 1
-        if COUNT == 61:
-            COUNT = 1
-#        print(CLOCK.get_time())
+        if COUNT == FrameRate:
+            COUNT = 0
+        # print(CLOCK.get_time()) #check the time between each frame (144HZ=7ms; 60HZ=16.67ms)
         
 if __name__ == '__main__':
     pygame.init()
@@ -42,8 +44,9 @@ if __name__ == '__main__':
     pygame.display.update()
     pygame.display.set_caption("Blinking")
     
-    
+    ''' frequency '''
     frequency = [8,9,10,11,12,13] #frequency bank
+    ''' POINTS '''
     POINTS = [[(1175,0),(1070,210),(1280,210)],         #takeoff
               [(1175,640),(1070,430),(1280,430)],       #land
               [(425,0),(530,210),(320,210)],            #forward

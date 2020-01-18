@@ -56,11 +56,10 @@ def fbcca(eeg, list_freqs, fs, num_harms=3, num_fbs=5):
                  # output is the highest correlation linear combination of two sets
                  r_tmp, _ = pearsonr(np.squeeze(test_C), np.squeeze(ref_C)) #return r and p_value, use np.squeeze to adapt the API 
                  r[fb_i, class_i] = r_tmp
-        
+                 
         rho = np.dot(fb_coefs, r)  #weighted sum of r from all different filter banks' result
         tau = np.argmax(rho)  #get maximum from the target as the final predict (get the index)
         results[targ_i] = tau #index indicate the maximum(most possible) target
-
     return results
 
 '''
@@ -92,7 +91,7 @@ Reference:
 def cca_reference(list_freqs, fs, num_smpls, num_harms=3):
     
     num_freqs = len(list_freqs)
-    tidx = np.arange(1,num_smpls+1)/fs#time index
+    tidx = np.arange(1,num_smpls+1)/fs #time index
     
     y_ref = np.zeros((num_freqs, 2*num_harms, num_smpls))
     for freq_i in range(num_freqs):
@@ -118,7 +117,7 @@ def fbcca_realtime(data, list_freqs, fs, num_harms=3, num_fbs=5):
     _, num_smpls = data.shape
     
     y_ref = cca_reference(list_freqs, fs, num_smpls, num_harms)
-    cca = CCA(n_components=1) #initilize CCA
+    cca = CCA(n_components=1) #initialize CCA
     
     # result matrix
     r = np.zeros((num_fbs,num_targs))
@@ -134,9 +133,11 @@ def fbcca_realtime(data, list_freqs, fs, num_harms=3, num_fbs=5):
             r[fb_i, class_i] = r_tmp
     
     rho = np.dot(fb_coefs, r)  #weighted sum of r from all different filter banks' result
-    result = np.argmax(rho)  #get maximum from the target as the final predict (get the index)
-    #index indicate the maximum(most possible) target
-    if abs(rho[result])<2.911:  #2.587=np.sum(fb_coefs*0.8) #2.91=np.sum(fb_coefs*0.9)
+    print(rho) #print out the correlation
+    result = np.argmax(rho)  #get maximum from the target as the final predict (get the index), and index indicates the maximum entry(most possible target)
+    ''' Threshold '''
+    THRESHOLD = 2.1
+    if abs(rho[result])<THRESHOLD:  #2.587=np.sum(fb_coefs*0.8) #2.91=np.sum(fb_coefs*0.9) #1.941=np.sum(fb_coefs*0.6)
         return 999 #if the correlation isn't big enough, do not return any command
     else:
         return result

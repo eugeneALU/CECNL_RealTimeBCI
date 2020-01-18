@@ -59,7 +59,7 @@ num_harms = 5
 #100*(1-alpha_ci): confidence intervals
 alpha_ci = 0.05
 #Sampling rate [Hz]
-fs = 250                 
+fs = 250              
 #Duration for gaze shifting [s]
 len_shift_s = 0.5             
 #List of stimulus frequencies

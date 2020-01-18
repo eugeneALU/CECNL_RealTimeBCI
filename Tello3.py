@@ -52,10 +52,9 @@ class TELLO():
     def __del__(self):
         try:
             self.sock.sendto('land'.encode(encoding="utf-8"), self.telloaddr)
+        finally:
             self.sock.close()
-        except:
-            pass
-        print ('close socket')
+            print ('close socket')
         
 ### Testing
 if __name__ == '__main__':
